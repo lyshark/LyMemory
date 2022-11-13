@@ -25,6 +25,40 @@
 
 <br>
 
+无论是非持续读写还是持续读写，安装驱动都是必须要做的，如下将演示如何调用`Engine.dll`模块实现对`LyMemory.sys`驱动的安装与卸载。
+```c
+#include <iostream>
+#include <Windows.h>
+
+// 定义安装与卸载驱动
+typedef void(*InstallDriver)();
+typedef void(*RemoveDriver)();
+
+// typedef BYTE(*ReadProcessMemoryByte)(DWORD pid, ULONG64 address);
+
+int main(int argc, char *argv[])
+{
+	// 动态加载
+	HMODULE hmod = LoadLibrary(L"Engine32.dll");
+
+	// 获取到函数地址
+	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
+	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
+	
+	// 安装驱动
+	InstallDrivers();
+
+	Sleep(5000);
+
+	// 卸载驱动
+	RemoveDrivers();
+	
+	return 0;
+}
+```
+
+<br>
+
 ### 非持续读写
 
 读写时需要传入进程PID以及读写地址，此类读写方式适合非持续访问，常用于一次性改写，一次性读取的场景，目前非持续读写包括了如下20个读写子功能。
