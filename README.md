@@ -212,6 +212,68 @@ int main(int argc, char *argv[])
 
 ![image](https://user-images.githubusercontent.com/52789403/201504316-bac89189-eeb1-4b71-9805-7819d5f65e0a.png)
 
+读取整数浮点数与读字节一致这里不再演示了，重点看下多级偏移如何读写，读取多级偏移需要动态调用`ReadProcessDeviationInt32`函数。
+```C
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <Windows.h>
+#include <inttypes.h>
+
+// 定义安装与卸载驱动
+typedef void(*InstallDriver)();
+typedef void(*RemoveDriver)();
+
+// 读写内存偏移整数型
+typedef struct
+{
+	DWORD pid;
+	ULONG64 base_address;
+	DWORD offset[32];
+	DWORD offset_len;
+	INT64 data;
+}ProcessDeviationIntMemory;
+
+// 定义指针
+typedef INT32(*ReadProcessDeviationInt32)(ProcessDeviationIntMemory);
+
+int main(int argc, char *argv[])
+{
+	// 动态加载驱动
+	HMODULE hmod = LoadLibrary(L"Engine32.dll");
+
+	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
+	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
+
+	InstallDrivers();
+
+	// 读取多级偏移整数型
+	ReadProcessDeviationInt32 read_process_deviation_int32 = (ReadProcessDeviationInt32) \
+		GetProcAddress(hmod, "ReadProcessDeviationInt32");
+
+	ProcessDeviationIntMemory read_memory = { 0 };
+
+	read_memory.pid = 6764;                  // 进程PID
+	read_memory.base_address = 0x6566e0;     // 基地址
+	read_memory.offset_len = 4;              // 偏移长度
+	read_memory.data = 0;                    // 读入的数据
+	read_memory.offset[0] = 0x18;            // 一级偏移
+	read_memory.offset[1] = 0x0;             // 二级偏移
+	read_memory.offset[2] = 0x14;            // 三级偏移
+	read_memory.offset[3] = 0x0c;            // 四级偏移
+
+	DWORD ref = read_process_deviation_int32(read_memory);
+
+	printf("读取参数: %d \n", ref);
+
+	getchar();
+	RemoveDrivers();
+	return 0;
+}
+```
+
+读取多级偏移效果如下：
+
+![image](https://user-images.githubusercontent.com/52789403/192539232-56aa1e34-d113-4625-ac9b-226b6f8cb0cc.png)
 
 
 
@@ -272,59 +334,3 @@ int main(int argc, char *argv[])
 | DWORD64 GetSystemRoutineAddress(std::string funcname) | 获取系统函数内存地址 |
 | DWORD64 CreateRemoteMemory(DWORD length) | 在对端分配内存空间 |
 | DWORD DeleteRemoteMemory(DWORD64 address, DWORD length) | 销毁对端内存 |
-
-以读取多级偏移为例，需要动态调用`Engine.dll`里面的导出函数，由导出函数去调用`LyMemory.sys`驱动程序，获取结果。
-```C
-#include <iostream>
-#include <Windows.h>
-
-// 安装驱动
-typedef void(*InstallDriver)();
-
-// 读写内存偏移整数型
-typedef struct
-{
-	DWORD pid;
-	ULONG64 base_address;
-	DWORD offset[32];
-	DWORD offset_len;
-	INT64 data;
-}ProcessDeviationIntMemory;
-
-typedef INT32(*ReadProcessDeviationInt32)(ProcessDeviationIntMemory);
-
-int main(int argc, char *argv[])
-{
-	// 动态加载驱动
-	HMODULE hmod = LoadLibrary(L"Engine.dll");
-
-	InstallDriver Install = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
-	Install();
-
-	// 读取多级偏移整数型
-	ReadProcessDeviationInt32 read = (ReadProcessDeviationInt32) \
-	                            GetProcAddress(hmod, "ReadProcessDeviationInt32");
-	
-	ProcessDeviationIntMemory write = { 0 };
-
-	write.pid = 6672;                  // 进程PID
-	write.base_address = 0x6566e0;     // 基地址
-	write.offset_len = 4;              // 偏移长度
-	write.data = 0;                    // 读入的数据
-	write.offset[0] = 0x18;            // 一级偏移
-	write.offset[1] = 0x0;             // 二级偏移
-	write.offset[2] = 0x14;            // 三级偏移
-	write.offset[3] = 0x0c;            // 四级偏移
-
-	DWORD ref = read(write);
-
-	printf("读取参数: %d \n", ref);
-
-	getchar();
-	return 0;
-}
-```
-
-读取多级偏移效果如下：
-
-![image](https://user-images.githubusercontent.com/52789403/192539232-56aa1e34-d113-4625-ac9b-226b6f8cb0cc.png)
