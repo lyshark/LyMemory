@@ -344,7 +344,8 @@ int main(int argc, char *argv[])
 
 以`user32.dll`模块为例，读取效果如下所示；
 
-![image](https://user-images.githubusercontent.com/52789403/201504953-4b0b0b42-0234-4af9-993a-2c2d56e1bad9.png)
+![image](https://user-images.githubusercontent.com/52789403/201504971-f7aa9578-8b23-4d2f-b322-1f057b9d9a0b.png)
+
 
 
 
