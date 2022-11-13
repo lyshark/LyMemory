@@ -306,6 +306,45 @@ int main(int argc, char *argv[])
 
 ![image](https://user-images.githubusercontent.com/52789403/192539232-56aa1e34-d113-4625-ac9b-226b6f8cb0cc.png)
 
+**内核读取模块基地址：** 内核中强制读取指定进程中模块的基地址。
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <Windows.h>
+#include <inttypes.h>
+
+// 定义安装与卸载驱动
+typedef void(*InstallDriver)();
+typedef void(*RemoveDriver)();
+
+typedef DWORD64 (*GetModuleAddress)(DWORD pid, std::string dllname);
+
+int main(int argc, char *argv[])
+{
+	// 动态加载驱动
+	HMODULE hmod = LoadLibrary(L"Engine32.dll");
+
+	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
+	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
+
+	InstallDrivers();
+
+	// 读取模块基址
+	GetModuleAddress get_module_address = (GetModuleAddress)GetProcAddress(hmod, "GetModuleAddress");
+
+	// 调用
+	DWORD64 address = get_module_address(6764, "user32.dll");
+	printf("dllbase = 0x%016I64x \n", address);
+
+	getchar();
+	RemoveDrivers();
+	return 0;
+}
+```
+
+以`user32.dll`模块为例，读取效果如下所示；
+
+![image](https://user-images.githubusercontent.com/52789403/201504953-4b0b0b42-0234-4af9-993a-2c2d56e1bad9.png)
 
 
 
