@@ -34,8 +34,6 @@
 typedef void(*InstallDriver)();
 typedef void(*RemoveDriver)();
 
-// typedef BYTE(*ReadProcessMemoryByte)(DWORD pid, ULONG64 address);
-
 int main(int argc, char *argv[])
 {
 	// 动态加载
