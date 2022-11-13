@@ -122,7 +122,8 @@ int main(int argc, char *argv[])
 ```
 运行这段代码，即可得到进程PID为`6764`地址`0x0057e070`处一个字节的数据，如下所示；
 
-![image](https://user-images.githubusercontent.com/52789403/201504078-61df9548-690f-4dba-bc6d-d2a319ba1b4d.png)
+![image](https://user-images.githubusercontent.com/52789403/201504131-e53d0ee3-dc1b-48ba-bdfc-6428e793fcb5.png)
+
 
 
 
