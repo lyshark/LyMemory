@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 
 ![image](https://user-images.githubusercontent.com/52789403/201504131-e53d0ee3-dc1b-48ba-bdfc-6428e793fcb5.png)
 
-读内存字节功能不仅仅可以用于读取内存中的数值，通过配合`capstone`反汇编引擎同样可以实现对特定区域的反汇编功能。
+读内存字节功能不仅可以用于读取内存中的数值，配合`capstone`反汇编引擎可以实现对特定区域的反汇编。
 ```c
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 ```
-如上代码我们反汇编进程内`0x005800b8`地址，向下反汇编1024字节，输出效果如下；
+如上代码我们反汇编进程内`0x005800b8`地址，向下反汇编`1024`字节，输出反汇编效果如下；
 
 ![image](https://user-images.githubusercontent.com/52789403/201504316-bac89189-eeb1-4b71-9805-7819d5f65e0a.png)
 
