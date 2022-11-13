@@ -124,7 +124,10 @@ int main(int argc, char *argv[])
 
 ![image](https://user-images.githubusercontent.com/52789403/201504131-e53d0ee3-dc1b-48ba-bdfc-6428e793fcb5.png)
 
+读内存字节功能不仅仅可以用于读取内存中的数值，通过配合`capstone`反汇编引擎同样可以实现对特定区域的反汇编功能。
+```c
 
+```
 
 
 
