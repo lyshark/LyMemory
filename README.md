@@ -23,7 +23,9 @@
 
 </div>
 
-读写工具目前有两种类型的API结构，第一种是直接读写如下，读写时需要传入进程PID以及读写地址，此类读写方式适合非频繁访问，读写方式是直接完成的常用于一次性改写一次性读取的场景。
+### 一次性读写
+
+读写时需要传入进程PID以及读写地址，此类读写方式适合非频繁访问，读写方式是直接完成的常用于一次性改写一次性读取的场景。
 
 |  导出函数   | 函数作用  |
 |  ----  | ----  |
@@ -48,8 +50,9 @@
 | BOOL WriteDeviationByte(ProcessDeviationMemory *write_offset_struct,BYTE write_byte) | 写多级偏移字节型 |
 | BOOL WriteDeviationFloat(ProcessDeviationMemory *write_offset_struct,FLOAT write_float) | 写多级偏移单浮点数 |
 
+### 持续读写
 
-如下是全局读写模式，在读写时需要提前调用`SetPid`设置PID，后期的调用将不需要再传入进程PID，此类读写适合长期读，例如某些参数例如人物数组坐标等，需要持续不间断读取。
+读写时需要提前调用`SetPid`设置PID，后期的调用将不需要再传入进程PID，此类读写适合长期读，例如某些参数例如人物数组坐标等，需要持续不间断读取。
 
 |  导出函数   | 函数作用  |
 |  ----  | ----  |
