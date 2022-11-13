@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
 ### 案例演示
 
-以内存读取作为第一个演示对象，动态调用`ReadProcessMemoryByte`可以这样来写，首先定义`typedef`动态指针，并通过`GetProcAddress`函数得到内存地址，最后调用指针`read_process_memory_byte`实现读取内存字节的功能。
+**内存读写字节:** 以内存读取作为第一个演示对象，动态调用`ReadProcessMemoryByte`可以这样来写，首先定义`typedef`动态指针，并通过`GetProcAddress`函数得到内存地址，最后调用指针`read_process_memory_byte`实现读取内存字节的功能。
 ```c
 #include <iostream>
 #include <Windows.h>
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 
 ![image](https://user-images.githubusercontent.com/52789403/201504131-e53d0ee3-dc1b-48ba-bdfc-6428e793fcb5.png)
 
-读内存字节功能不仅可以用于读取内存中的数值，配合`capstone`反汇编引擎可以实现对特定区域的反汇编。
+**内存字节反汇编:** 读内存字节功能不仅可以用于读取内存中的数值，配合`capstone`反汇编引擎可以实现对特定区域的反汇编。
 ```c
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
 
 ![image](https://user-images.githubusercontent.com/52789403/201504316-bac89189-eeb1-4b71-9805-7819d5f65e0a.png)
 
-读取整数浮点数与读字节一致这里不再演示了，重点看下多级偏移如何读写，读取多级偏移需要动态调用`ReadProcessDeviationInt32`函数。
+**读写多级指针:** 读取整数浮点数与读字节一致这里不再演示了，重点看下多级偏移如何读写，读取多级偏移需要动态调用`ReadProcessDeviationInt32`函数。
 ```C
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
