@@ -25,9 +25,9 @@
 
 <br>
 
-### 一次性读写
+### 非持续读写
 
-读写时需要传入进程PID以及读写地址，此类读写方式适合非持续访问，常用于一次性改写，一次性读取的场景。
+读写时需要传入进程PID以及读写地址，此类读写方式适合非持续访问，常用于一次性改写，一次性读取的场景，目前非持续读写包括了如下20个读写子功能。
 
 |  导出函数   | 函数作用  |
 |  ----  | ----  |
@@ -51,6 +51,35 @@
 | FLOAT ReadDeviationFloat(ProcessDeviationMemory *read_offset_struct) | 读多级偏移单浮点数 |
 | BOOL WriteDeviationByte(ProcessDeviationMemory *write_offset_struct,BYTE write_byte) | 写多级偏移字节型 |
 | BOOL WriteDeviationFloat(ProcessDeviationMemory *write_offset_struct,FLOAT write_float) | 写多级偏移单浮点数 |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### 持续读写
 
