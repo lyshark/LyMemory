@@ -84,6 +84,33 @@ int main(int argc, char *argv[])
 | BOOL WriteDeviationByte(ProcessDeviationMemory *write_offset_struct,BYTE write_byte) | 写多级偏移字节型 |
 | BOOL WriteDeviationFloat(ProcessDeviationMemory *write_offset_struct,FLOAT write_float) | 写多级偏移单浮点数 |
 
+以内存读取作为第一个演示对象，动态调用`ReadProcessMemoryByte`可以这样来写，首先定义`typedef`动态指针，并通过`GetProcAddress`函数得到内存地址，最后调用指针`read_process_memory_byte`实现读取内存字节的功能。
+```c
+#include <iostream>
+#include <Windows.h>
+
+typedef BYTE(*ReadProcessMemoryByte)(DWORD pid, ULONG64 address);
+
+int main(int argc, char *argv[])
+{
+	// 动态加载
+	HMODULE hmod = LoadLibrary(L"Engine32.dll");
+
+	// 得到内存地址
+	ReadProcessMemoryByte read_process_memory_byte = (ReadProcessMemoryByte)GetProcAddress(hmod, "ReadProcessMemoryByte");
+
+	// 调用得到数据
+	BYTE ref = read_process_memory_byte(6764, 0x0057e070);
+
+	printf("输出数据：%x \n", ref);
+
+	getchar();
+	return 0;
+}
+```
+
+
+
 
 
 
