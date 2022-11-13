@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
 
 	for (size_t i = 0; i < 1023; i++)
 	{
-		BYTE by = read_process_memory_byte(6764, 0x005800b8);
+		BYTE by = read_process_memory_byte(6764, 0x005800b8 + i);
 
 		arr[i] = by;
 	}
@@ -190,7 +190,8 @@ int main(int argc, char *argv[])
 				// printf("机器码: %d -> %02X \n", x, insn[index].bytes[x]);
 			}
 
-			printf("地址: 0x%"PRIx64" | 长度: %d 反汇编: %s %s \n", insn[index].address, insn[index].size, insn[index].mnemonic, insn[index].op_str);
+			printf("地址: 0x%"PRIx64" | 长度: %d 反汇编: %s %s \n", \
+			insn[index].address, insn[index].size, insn[index].mnemonic, insn[index].op_str);
 		}
 
 		cs_free(insn, count);
@@ -207,6 +208,10 @@ int main(int argc, char *argv[])
 	return 0;
 }
 ```
+如上代码我们反汇编进程内`0x005800b8`地址，向下反汇编1024字节，输出效果如下；
+
+![image](https://user-images.githubusercontent.com/52789403/201504316-bac89189-eeb1-4b71-9805-7819d5f65e0a.png)
+
 
 
 
