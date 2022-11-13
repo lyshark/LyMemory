@@ -126,8 +126,89 @@ int main(int argc, char *argv[])
 
 读内存字节功能不仅仅可以用于读取内存中的数值，通过配合`capstone`反汇编引擎同样可以实现对特定区域的反汇编功能。
 ```c
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <Windows.h>
+#include <inttypes.h>
+#include <capstone\capstone.h>
 
+#pragma comment(lib,"capstone32.lib")
+
+// 定义安装与卸载驱动
+typedef void(*InstallDriver)();
+typedef void(*RemoveDriver)();
+
+// 读内存字节
+typedef BYTE(*ReadProcessMemoryByte)(DWORD pid, ULONG64 address);
+
+int main(int argc, char *argv[])
+{
+	// 动态加载驱动
+	HMODULE hmod = LoadLibrary(L"Engine32.dll");
+
+	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
+	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
+
+	InstallDrivers();
+
+	// 得到内存地址
+	ReadProcessMemoryByte read_process_memory_byte = \
+		(ReadProcessMemoryByte)GetProcAddress(hmod, "ReadProcessMemoryByte");
+
+
+	BYTE arr[1024] = { 0 };
+
+	for (size_t i = 0; i < 1023; i++)
+	{
+		BYTE by = read_process_memory_byte(6764, 0x005800b8);
+
+		arr[i] = by;
+	}
+
+	csh handle;
+	cs_insn *insn;
+	size_t count;
+
+	int size = 1023;
+
+	// 打开句柄
+	if (cs_open(CS_ARCH_X86, CS_MODE_32, &handle) != CS_ERR_OK)
+	{
+		return 0;
+	}
+
+	// 反汇编代码,地址从0x1000开始,返回总条数
+	count = cs_disasm(handle, (unsigned char *)arr, size, 0x402c00, 0, &insn);
+
+	if (count > 0)
+	{
+		size_t index;
+		for (index = 0; index < count; index++)
+		{
+			for (int x = 0; x < insn[index].size; x++)
+			{
+				// printf("机器码: %d -> %02X \n", x, insn[index].bytes[x]);
+			}
+
+			printf("地址: 0x%"PRIx64" | 长度: %d 反汇编: %s %s \n", insn[index].address, insn[index].size, insn[index].mnemonic, insn[index].op_str);
+		}
+
+		cs_free(insn, count);
+	}
+	else
+	{
+		printf("反汇编返回长度为空 \n");
+	}
+
+	cs_close(&handle);
+
+	getchar();
+	RemoveDrivers();
+	return 0;
+}
 ```
+
+
 
 
 
