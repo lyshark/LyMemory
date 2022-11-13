@@ -97,12 +97,13 @@ int main(int argc, char *argv[])
 	HMODULE hmod = LoadLibrary(L"Engine32.dll");
 
 	// 得到内存地址
-	ReadProcessMemoryByte read_process_memory_byte = (ReadProcessMemoryByte)GetProcAddress(hmod, "ReadProcessMemoryByte");
+	ReadProcessMemoryByte read_process_memory_byte = \
+		(ReadProcessMemoryByte)GetProcAddress(hmod, "ReadProcessMemoryByte");
 
 	// 调用得到数据
 	BYTE ref = read_process_memory_byte(6764, 0x0057e070);
 
-	printf("输出数据：%x \n", ref);
+	printf("输出数据：%x | 十进制：%d \n", ref, ref);
 
 	getchar();
 	return 0;
