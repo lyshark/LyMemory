@@ -10,6 +10,14 @@
 
 <br>
 
+<div align=center>
+
+[![Build status](https://cdn.lyshark.com/archive/LyScript/build.svg)](https://github.com/lyshark/LyMemory) [![Crowdin](https://cdn.lyshark.com/archive/LyScript/email.svg)](mailto:me@lyshark.com)  [![OSCS Status](https://cdn.lyshark.com/archive/LyScript/OSCS.svg)](https://www.oscs1024.com/project/lyshark/LyScript?ref=badge_small)
+
+</div>
+
+<br>
+
 一款完全免费的内核级内存读写工具，可强制读写应用层任意进程内存数据，驱动工具目前支持读写整数，字节，字节集，单精度浮点数，双精度浮点数，多级偏移读写，取模块地址，分配远程内存等功能，读写效率高，速度快，兼容性好，使用时需自己签名或在测试模式下。
 
  - 警告: 请勿用于非法用途，本工具只是Demo演示项目，上号很容易拉闸，谨慎使用！
