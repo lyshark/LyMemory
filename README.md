@@ -1010,7 +1010,8 @@ int main(int argc, char *argv[])
 				// printf("机器码: %d -> %02X \n", x, insn[index].bytes[x]);
 			}
 
-			printf("地址: 0x%"PRIx64" | 长度: %d 反汇编: %s %s \n", insn[index].address, insn[index].size, insn[index].mnemonic, insn[index].op_str);
+			printf("地址: 0x%"PRIx64" | 长度: %d 反汇编: %s %s \n", \
+			insn[index].address, insn[index].size, insn[index].mnemonic, insn[index].op_str);
 		}
 
 		cs_free(insn, count);
