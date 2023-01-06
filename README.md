@@ -361,7 +361,54 @@ int main(int argc, char *argv[])
 
 ## 静态库调用驱动
 
-与动态调用相比，静态库则需要在编程时使用特定的库文件，LyMemory目前只提供了64位库文件，编译程序也必须使用x64模式，使用时需要手动引用到项目内，至于如何引用到项目中此处就不再赘述了。
+与动态调用相比，静态库则需要在编程时使用特定的库文件，目前`LyMemory`只提供了`64`位库文件，编译程序时也必须使用`x64`模式，使用时需要手动引用到项目内，至于如何引用到项目中此处就不再赘述了。
+
+相比于动态加载来说，静态库调用就方便了许多，一般可以直接使用如下的方式实现调用。
+```c
+#include <LyMemoryLib.h>
+
+#pragma comment(lib,"LyMemoryLib.lib")
+
+int main(int argc, char* argv[])
+{
+	LyMemoryDrvCtrl Memory;
+
+	char szSysFile[MAX_PATH] = { 0 };
+	char szSvcLnkName[] = "LyMemory";;
+	BOOL ref = FALSE;
+
+	// 获取完整路径
+	Memory.GetAppPath(szSysFile);
+	strcat(szSysFile, "LyMemory.sys");
+	printf("路径: %s \n", szSysFile);
+
+	// 安装驱动
+	ref = Memory.Install(szSysFile, szSvcLnkName, szSvcLnkName);
+	printf("状态: %d \n", ref);
+
+	// 启动驱动
+	ref = Memory.Start();
+	printf("状态: %d \n", ref);
+
+	ref = Memory.Open("\\\\.\\LyMemory");
+	printf("状态: %d \n", ref);
+
+	// 关闭移除驱动
+	ref = Memory.Stop();
+	ref = Memory.Remove();
+	printf("状态: %d \n", ref);
+
+	getchar();
+	return 0;
+}
+```
+
+程序运行后则会输出驱动具体路径以及安装状态，安装成功即可看到打印信息。
+
+![image](https://user-images.githubusercontent.com/52789403/210949083-9b26e0f4-af9c-4c7a-bcda-eb250f33014d.png)
+
+
+
 
 
 
