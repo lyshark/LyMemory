@@ -42,6 +42,36 @@
 
 项目中的`dllexport.h`以及`struct.h`是用于参考的调用函数定义，为了能直观的演示功能，我们以内核读取模块基地址，内存读写字节，内存字节反汇编，读写多级指针，四个功能作为演示，以让用户能够更好的理解。
 
+在开始之前，安装驱动都是必须要做的，如下将演示如何调用`Engine.dll`模块实现对`LyMemory.sys`驱动的安装与卸载。
+```c
+#include <iostream>
+#include <Windows.h>
+
+// 定义安装与卸载驱动
+typedef void(*InstallDriver)();
+typedef void(*RemoveDriver)();
+
+int main(int argc, char *argv[])
+{
+	// 动态加载
+	HMODULE hmod = LoadLibrary(L"Engine32.dll");
+
+	// 获取到函数地址
+	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
+	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
+	
+	// 安装驱动
+	InstallDrivers();
+
+	Sleep(5000);
+
+	// 卸载驱动
+	RemoveDrivers();
+	
+	return 0;
+}
+```
+
 **内核读取模块基地址：** 内核中强制读取指定进程中模块的基地址。
 ```c
 #define _CRT_SECURE_NO_WARNINGS
@@ -290,35 +320,7 @@ int main(int argc, char *argv[])
 
 
 
-无论是非持续读写还是持续读写，安装驱动都是必须要做的，如下将演示如何调用`Engine.dll`模块实现对`LyMemory.sys`驱动的安装与卸载，当然这一步并不是必须的，你也可以通过第三方工具将驱动安装并运行起来。
-```c
-#include <iostream>
-#include <Windows.h>
 
-// 定义安装与卸载驱动
-typedef void(*InstallDriver)();
-typedef void(*RemoveDriver)();
-
-int main(int argc, char *argv[])
-{
-	// 动态加载
-	HMODULE hmod = LoadLibrary(L"Engine32.dll");
-
-	// 获取到函数地址
-	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
-	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
-	
-	// 安装驱动
-	InstallDrivers();
-
-	Sleep(5000);
-
-	// 卸载驱动
-	RemoveDrivers();
-	
-	return 0;
-}
-```
 
 <br>
 
