@@ -330,7 +330,7 @@ int main(int argc, char *argv[])
 
 <br>
 
-### 非持续读写
+## 读写函数预览
 
 读写时需要传入进程PID以及读写地址，此类读写方式适合非持续访问，常用于一次性改写，一次性读取的场景，目前非持续读写包括了如下20个读写子功能。
 
@@ -357,10 +357,6 @@ int main(int argc, char *argv[])
 | BOOL WriteDeviationByte(ProcessDeviationMemory *write_offset_struct,BYTE write_byte) | 写多级偏移字节型 |
 | BOOL WriteDeviationFloat(ProcessDeviationMemory *write_offset_struct,FLOAT write_float) | 写多级偏移单浮点数 |
 
-<br>
-
-### 持续读写
-
 读写时需要提前设置进程PID号，后期的调用将不需要再传入进程PID号，此类读写适合长期读，某些参数例如人物数组，坐标等，需要持续不间断读取。
 
 |  导出函数   | 函数作用  |
@@ -386,10 +382,6 @@ int main(int argc, char *argv[])
 
 <br>
 
-### 案例演示
+### 项目地址
 
-
-
-<br>
-
-GitHub 项目地址: https://github.com/lyshark/LyMemory
+https://github.com/lyshark/LyMemory
