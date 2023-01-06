@@ -39,7 +39,49 @@
 
 </div>
 
+项目中的`dllexport.h`以及`struct.h`是用于参考的调用函数定义，为了能直观的演示功能，我们以内核读取模块基地址，内存读写字节，内存字节反汇编，读写多级指针，三个功能作为演示。
+
 <br>
+
+**内核读取模块基地址：** 内核中强制读取指定进程中模块的基地址。
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <Windows.h>
+#include <inttypes.h>
+
+// 定义安装与卸载驱动
+typedef void(*InstallDriver)();
+typedef void(*RemoveDriver)();
+
+typedef DWORD64 (*GetModuleAddress)(DWORD pid, std::string dllname);
+
+int main(int argc, char *argv[])
+{
+	// 动态加载驱动
+	HMODULE hmod = LoadLibrary(L"Engine32.dll");
+
+	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
+	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
+
+	InstallDrivers();
+
+	// 读取模块基址
+	GetModuleAddress get_module_address = (GetModuleAddress)GetProcAddress(hmod, "GetModuleAddress");
+
+	// 调用
+	DWORD64 address = get_module_address(6764, "user32.dll");
+	printf("dllbase = 0x%016I64x \n", address);
+
+	getchar();
+	RemoveDrivers();
+	return 0;
+}
+```
+
+以`user32.dll`模块为例，读取效果如下所示；
+
+![image](https://user-images.githubusercontent.com/52789403/201504971-f7aa9578-8b23-4d2f-b322-1f057b9d9a0b.png)
 
 **内存读写字节:** 以内存读取作为第一个演示对象，动态调用`ReadProcessMemoryByte`可以这样来写，首先定义`typedef`动态指针，并通过`GetProcAddress`函数得到内存地址，最后调用指针`read_process_memory_byte`实现读取内存字节的功能。
 ```c
@@ -231,46 +273,6 @@ int main(int argc, char *argv[])
 读取多级偏移效果如下：
 
 ![image](https://user-images.githubusercontent.com/52789403/192539232-56aa1e34-d113-4625-ac9b-226b6f8cb0cc.png)
-
-**内核读取模块基地址：** 内核中强制读取指定进程中模块的基地址。
-```c
-#define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
-#include <Windows.h>
-#include <inttypes.h>
-
-// 定义安装与卸载驱动
-typedef void(*InstallDriver)();
-typedef void(*RemoveDriver)();
-
-typedef DWORD64 (*GetModuleAddress)(DWORD pid, std::string dllname);
-
-int main(int argc, char *argv[])
-{
-	// 动态加载驱动
-	HMODULE hmod = LoadLibrary(L"Engine32.dll");
-
-	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
-	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
-
-	InstallDrivers();
-
-	// 读取模块基址
-	GetModuleAddress get_module_address = (GetModuleAddress)GetProcAddress(hmod, "GetModuleAddress");
-
-	// 调用
-	DWORD64 address = get_module_address(6764, "user32.dll");
-	printf("dllbase = 0x%016I64x \n", address);
-
-	getchar();
-	RemoveDrivers();
-	return 0;
-}
-```
-
-以`user32.dll`模块为例，读取效果如下所示；
-
-![image](https://user-images.githubusercontent.com/52789403/201504971-f7aa9578-8b23-4d2f-b322-1f057b9d9a0b.png)
 
 
 ## 静态库调用驱动
