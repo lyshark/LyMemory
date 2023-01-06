@@ -42,7 +42,7 @@
 
 项目中的`dllexport.h`以及`struct.h`是用于参考的调用函数定义，为了能直观的演示功能，我们以内核读取模块基地址，内存读写字节，内存字节反汇编，读写多级指针，四个功能作为演示，以让用户能够更好的理解。
 
-在开始之前，安装驱动都是必须要做的，如下将演示如何调用`Engine.dll`模块实现对`LyMemory.sys`驱动的安装与卸载。
+在开始之前安装驱动都是必须要做的，通过调用`Engine.dll`模块实现对`LyMemory.sys`驱动的安装与卸载很容易，如下代码即可实现动态加载。
 ```c
 #include <iostream>
 #include <Windows.h>
@@ -303,8 +303,12 @@ int main(int argc, char *argv[])
 
 ![image](https://user-images.githubusercontent.com/52789403/192539232-56aa1e34-d113-4625-ac9b-226b6f8cb0cc.png)
 
+<br>
 
 ## 静态库调用驱动
+
+与动态调用相比，静态库则需要在编程时使用特定的库文件，LyMemory目前只提供了64位库文件，使用时需要手动引用到项目内，至于如何引用到项目中，此处就不再赘述了。
+
 
 
 
