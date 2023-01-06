@@ -37,6 +37,7 @@
 
 |  导出函数   | 函数作用  |
 |  ----  | ----  |
+| BOOL SwitchDriver(PCHAR pSwitchName) | 切换读写模式 |
 | BYTE ReadProcessMemoryByte(DWORD Pid, ULONG64 Address) | 读内存字节 |
 | BOOL WriteProcessMemoryByte(DWORD Pid, ULONG64 Address, BYTE bytef) | 写内存字节 |
 | DWORD ReadProcessMemoryInt32(DWORD Pid, ULONG64 Address) | 读内存32位整数型 |
