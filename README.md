@@ -20,14 +20,16 @@
 
 一款完全免费的内核级内存读写工具，可强制读写应用层任意进程内存数据，驱动工具目前支持读写整数，字节，字节集，单精度浮点数，双精度浮点数，多级偏移读写，取模块地址，分配远程内存等功能，读写效率高，速度快，兼容性好，使用时需自己签名或在测试模式下。
 
+
+**新版本更新中，包括功能，驱动注入，驱动鼠标键盘控制，将解决更多潜在问题，提供lib库文件。**
+
  - 警告: 请勿用于非法用途，本工具只是Demo演示项目，上号很容易拉闸，谨慎使用！
    - 问：你这个东西是什么读写原理？ 答：目前支持物理页，CR3，内存拷贝，MDL(默认)
    - 问：你这个东西会拉闸吗？ 答：会，拉闸的速度取决于你读写的是什么游戏。
    - 问：拉闸后我该怎么办？答：等着封号10年，建议另起炉灶！
    
-**新版本更新中，包括功能，驱动注入，驱动鼠标键盘控制，将解决更多潜在问题，提供lib库文件。**
 
-程序调用次序如下：
+驱动读写目前支持两种调用模式，使用Engine.dll模块可动态调用驱动功能。
 
 <div align=center>
 
@@ -36,96 +38,6 @@
 </div>
 
 <br>
-
-无论是非持续读写还是持续读写，安装驱动都是必须要做的，如下将演示如何调用`Engine.dll`模块实现对`LyMemory.sys`驱动的安装与卸载，当然这一步并不是必须的，你也可以通过第三方工具将驱动安装并运行起来。
-```c
-#include <iostream>
-#include <Windows.h>
-
-// 定义安装与卸载驱动
-typedef void(*InstallDriver)();
-typedef void(*RemoveDriver)();
-
-int main(int argc, char *argv[])
-{
-	// 动态加载
-	HMODULE hmod = LoadLibrary(L"Engine32.dll");
-
-	// 获取到函数地址
-	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
-	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
-	
-	// 安装驱动
-	InstallDrivers();
-
-	Sleep(5000);
-
-	// 卸载驱动
-	RemoveDrivers();
-	
-	return 0;
-}
-```
-
-<br>
-
-### 非持续读写
-
-读写时需要传入进程PID以及读写地址，此类读写方式适合非持续访问，常用于一次性改写，一次性读取的场景，目前非持续读写包括了如下20个读写子功能。
-
-|  导出函数   | 函数作用  |
-|  ----  | ----  |
-| BYTE ReadProcessMemoryByte(DWORD Pid, ULONG64 Address) | 读内存字节 |
-| BOOL WriteProcessMemoryByte(DWORD Pid, ULONG64 Address, BYTE bytef) | 写内存字节 |
-| DWORD ReadProcessMemoryInt32(DWORD Pid, ULONG64 Address) | 读内存32位整数型 |
-| DWORD ReadProcessMemoryInt64(DWORD Pid, ULONG64 Address) | 读内存64位整数型 |
-| BOOL WriteProcessMemoryInt32(DWORD Pid, ULONG64 Address, DWORD write) | 写内存32位整数型 |
-| BOOL WriteProcessMemoryInt64(DWORD Pid, ULONG64 Address, DWORD write) | 写内存64位整数型 |
-| FLOAT ReadProcessMemoryFloat(DWORD Pid, ULONG64 Address) | 读内存单精度浮点数 |
-| DOUBLE ReadProcessMemoryDouble(DWORD Pid, ULONG64 Address) | 读内存双精度浮点数 |
-| BOOL WriteProcessMemoryFloat(DWORD Pid, ULONG64 Address, FLOAT write) | 写内存单精度浮点数 |
-| BOOL WriteProcessMemoryDouble(DWORD Pid, ULONG64 Address, DOUBLE write) | 写内存双精度浮点数 |
-| INT32 ReadProcessDeviationInt32(ProcessDeviationIntMemory *read_offset_struct) | 读多级偏移32位整数 |
-| INT64 ReadProcessDeviationInt64(ProcessDeviationIntMemory *read_offset_struct) | 读多级偏移64位整数 |
-| BOOL WriteProcessDeviationInt32(ProcessDeviationIntMemory *write_offset_struct) | 写多级偏移32位整数 |
-| BOOL WriteProcessDeviationInt64(ProcessDeviationIntMemory *write_offset_struct) | 写多级偏移64位整数 |
-| DWORD ReadDeviationMemory32(ProcessDeviationMemory *read_offset_struct) | 读多级偏移32位内存 |
-| DWORD64 ReadDeviationMemory64(ProcessDeviationMemory *read_offset_struct) | 读多级偏移64位内存 |
-| BYTE ReadDeviationByte(ProcessDeviationMemory *read_offset_struct) | 读多级偏移字节型 |
-| FLOAT ReadDeviationFloat(ProcessDeviationMemory *read_offset_struct) | 读多级偏移单浮点数 |
-| BOOL WriteDeviationByte(ProcessDeviationMemory *write_offset_struct,BYTE write_byte) | 写多级偏移字节型 |
-| BOOL WriteDeviationFloat(ProcessDeviationMemory *write_offset_struct,FLOAT write_float) | 写多级偏移单浮点数 |
-
-<br>
-
-### 持续读写
-
-读写时需要提前设置进程PID号，后期的调用将不需要再传入进程PID号，此类读写适合长期读，某些参数例如人物数组，坐标等，需要持续不间断读取。
-
-|  导出函数   | 函数作用  |
-|  ----  | ----  |
-| BOOL SetPid(DWORD Pid) | 设置全局进程PID |
-| BOOL Read(DWORD pid, ULONG64 address, T* ret) | 全局读内存 |
-| BOOL Write(DWORD pid, ULONG64 address, T data) | 全局写内存 |
-| void ReadMemoryDWORD(DWORD pid, ULONG64 addre, DWORD * ret) | 读内存DWORD |
-| void ReadMemoryDWORD64(DWORD pid, ULONG64 addre, DWORD64 * ret) | 读内存DWORD64 |
-| void ReadMemoryBytes(DWORD pid, ULONG64 addre, BYTE **ret, DWORD sizes) | 读内存字节 |
-| void ReadMemoryFloat(DWORD pid, ULONG64 addre, float* ret) | 读内存浮点数 |
-| void ReadMemoryDouble(DWORD pid, ULONG64 addre, double* ret) | 读内存双精度浮点数 |
-| void WriteMemoryBytes(DWORD pid, ULONG64 addre, BYTE * data, DWORD sizes) | 写内存字节 |
-| void WriteMemoryDWORD(DWORD pid, ULONG64 addre, DWORD ret) | 写内存DWORD |
-| void WriteMemoryDWORD64(DWORD pid, ULONG64 addre, DWORD64 ret) | 写内存DWORD64 |
-| void WriteMemoryFloat(DWORD pid, ULONG64 addre, float ret) | 写内存浮点数 |
-| void WriteMemoryDouble(DWORD pid, ULONG64 addre, double ret) | 写内存双精度浮点数 |
-| DWORD64 GetModuleAddress(DWORD pid, std::string dllname) | 驱动读取进程模块基地址 |
-| DWORD GetProcessID(std::string procname) | 根据进程名称获取进程PID |
-| DWORD64 GetSystemRoutineAddress(std::string funcname) | 获取系统函数内存地址 |
-| DWORD64 CreateRemoteMemory(DWORD length) | 在对端分配内存空间 |
-| DWORD DeleteRemoteMemory(DWORD64 address, DWORD length) | 销毁对端内存 |
-
-<br>
-
-### 案例演示
 
 **内存读写字节:** 以内存读取作为第一个演示对象，动态调用`ReadProcessMemoryByte`可以这样来写，首先定义`typedef`动态指针，并通过`GetProcAddress`函数得到内存地址，最后调用指针`read_process_memory_byte`实现读取内存字节的功能。
 ```c
@@ -357,6 +269,110 @@ int main(int argc, char *argv[])
 以`user32.dll`模块为例，读取效果如下所示；
 
 ![image](https://user-images.githubusercontent.com/52789403/201504971-f7aa9578-8b23-4d2f-b322-1f057b9d9a0b.png)
+
+
+
+
+
+<br><br><br><br><br>
+
+
+
+
+
+
+
+无论是非持续读写还是持续读写，安装驱动都是必须要做的，如下将演示如何调用`Engine.dll`模块实现对`LyMemory.sys`驱动的安装与卸载，当然这一步并不是必须的，你也可以通过第三方工具将驱动安装并运行起来。
+```c
+#include <iostream>
+#include <Windows.h>
+
+// 定义安装与卸载驱动
+typedef void(*InstallDriver)();
+typedef void(*RemoveDriver)();
+
+int main(int argc, char *argv[])
+{
+	// 动态加载
+	HMODULE hmod = LoadLibrary(L"Engine32.dll");
+
+	// 获取到函数地址
+	InstallDriver InstallDrivers = (InstallDriver)GetProcAddress(hmod, "InstallDriver");
+	RemoveDriver RemoveDrivers = (RemoveDriver)GetProcAddress(hmod, "RemoveDriver");
+	
+	// 安装驱动
+	InstallDrivers();
+
+	Sleep(5000);
+
+	// 卸载驱动
+	RemoveDrivers();
+	
+	return 0;
+}
+```
+
+<br>
+
+### 非持续读写
+
+读写时需要传入进程PID以及读写地址，此类读写方式适合非持续访问，常用于一次性改写，一次性读取的场景，目前非持续读写包括了如下20个读写子功能。
+
+|  导出函数   | 函数作用  |
+|  ----  | ----  |
+| BYTE ReadProcessMemoryByte(DWORD Pid, ULONG64 Address) | 读内存字节 |
+| BOOL WriteProcessMemoryByte(DWORD Pid, ULONG64 Address, BYTE bytef) | 写内存字节 |
+| DWORD ReadProcessMemoryInt32(DWORD Pid, ULONG64 Address) | 读内存32位整数型 |
+| DWORD ReadProcessMemoryInt64(DWORD Pid, ULONG64 Address) | 读内存64位整数型 |
+| BOOL WriteProcessMemoryInt32(DWORD Pid, ULONG64 Address, DWORD write) | 写内存32位整数型 |
+| BOOL WriteProcessMemoryInt64(DWORD Pid, ULONG64 Address, DWORD write) | 写内存64位整数型 |
+| FLOAT ReadProcessMemoryFloat(DWORD Pid, ULONG64 Address) | 读内存单精度浮点数 |
+| DOUBLE ReadProcessMemoryDouble(DWORD Pid, ULONG64 Address) | 读内存双精度浮点数 |
+| BOOL WriteProcessMemoryFloat(DWORD Pid, ULONG64 Address, FLOAT write) | 写内存单精度浮点数 |
+| BOOL WriteProcessMemoryDouble(DWORD Pid, ULONG64 Address, DOUBLE write) | 写内存双精度浮点数 |
+| INT32 ReadProcessDeviationInt32(ProcessDeviationIntMemory *read_offset_struct) | 读多级偏移32位整数 |
+| INT64 ReadProcessDeviationInt64(ProcessDeviationIntMemory *read_offset_struct) | 读多级偏移64位整数 |
+| BOOL WriteProcessDeviationInt32(ProcessDeviationIntMemory *write_offset_struct) | 写多级偏移32位整数 |
+| BOOL WriteProcessDeviationInt64(ProcessDeviationIntMemory *write_offset_struct) | 写多级偏移64位整数 |
+| DWORD ReadDeviationMemory32(ProcessDeviationMemory *read_offset_struct) | 读多级偏移32位内存 |
+| DWORD64 ReadDeviationMemory64(ProcessDeviationMemory *read_offset_struct) | 读多级偏移64位内存 |
+| BYTE ReadDeviationByte(ProcessDeviationMemory *read_offset_struct) | 读多级偏移字节型 |
+| FLOAT ReadDeviationFloat(ProcessDeviationMemory *read_offset_struct) | 读多级偏移单浮点数 |
+| BOOL WriteDeviationByte(ProcessDeviationMemory *write_offset_struct,BYTE write_byte) | 写多级偏移字节型 |
+| BOOL WriteDeviationFloat(ProcessDeviationMemory *write_offset_struct,FLOAT write_float) | 写多级偏移单浮点数 |
+
+<br>
+
+### 持续读写
+
+读写时需要提前设置进程PID号，后期的调用将不需要再传入进程PID号，此类读写适合长期读，某些参数例如人物数组，坐标等，需要持续不间断读取。
+
+|  导出函数   | 函数作用  |
+|  ----  | ----  |
+| BOOL SetPid(DWORD Pid) | 设置全局进程PID |
+| BOOL Read(DWORD pid, ULONG64 address, T* ret) | 全局读内存 |
+| BOOL Write(DWORD pid, ULONG64 address, T data) | 全局写内存 |
+| void ReadMemoryDWORD(DWORD pid, ULONG64 addre, DWORD * ret) | 读内存DWORD |
+| void ReadMemoryDWORD64(DWORD pid, ULONG64 addre, DWORD64 * ret) | 读内存DWORD64 |
+| void ReadMemoryBytes(DWORD pid, ULONG64 addre, BYTE **ret, DWORD sizes) | 读内存字节 |
+| void ReadMemoryFloat(DWORD pid, ULONG64 addre, float* ret) | 读内存浮点数 |
+| void ReadMemoryDouble(DWORD pid, ULONG64 addre, double* ret) | 读内存双精度浮点数 |
+| void WriteMemoryBytes(DWORD pid, ULONG64 addre, BYTE * data, DWORD sizes) | 写内存字节 |
+| void WriteMemoryDWORD(DWORD pid, ULONG64 addre, DWORD ret) | 写内存DWORD |
+| void WriteMemoryDWORD64(DWORD pid, ULONG64 addre, DWORD64 ret) | 写内存DWORD64 |
+| void WriteMemoryFloat(DWORD pid, ULONG64 addre, float ret) | 写内存浮点数 |
+| void WriteMemoryDouble(DWORD pid, ULONG64 addre, double ret) | 写内存双精度浮点数 |
+| DWORD64 GetModuleAddress(DWORD pid, std::string dllname) | 驱动读取进程模块基地址 |
+| DWORD GetProcessID(std::string procname) | 根据进程名称获取进程PID |
+| DWORD64 GetSystemRoutineAddress(std::string funcname) | 获取系统函数内存地址 |
+| DWORD64 CreateRemoteMemory(DWORD length) | 在对端分配内存空间 |
+| DWORD DeleteRemoteMemory(DWORD64 address, DWORD length) | 销毁对端内存 |
+
+<br>
+
+### 案例演示
+
+
 
 <br>
 
