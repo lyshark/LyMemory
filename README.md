@@ -407,7 +407,7 @@ int main(int argc, char* argv[])
 
 程序运行后则会输出驱动具体路径以及安装状态，安装成功即可看到打印信息。
 
-![image](https://user-images.githubusercontent.com/52789403/210949244-26fb4130-7532-4264-80e7-8d6a987d9a2b.png)
+![image](https://user-images.githubusercontent.com/52789403/210955045-a390e9f0-013c-459e-8830-cc8e29af1a7a.png)
 
 **内核读/写字节集:** 对远端指定内存地址出读写字节集数组，该功能可用于强制代码注入等。
 ```c
@@ -1031,23 +1031,6 @@ int main(int argc, char *argv[])
 反汇编效果:
 
 ![image](https://user-images.githubusercontent.com/52789403/210952592-07c2a531-2766-4c45-b5b0-d66d70ff64e3.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-<br><br>
-
-
-<br>
 
 ## 项目地址
 
